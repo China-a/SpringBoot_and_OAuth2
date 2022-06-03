@@ -91,25 +91,20 @@ public class SocialApplication extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler("/");
         // @formatter:off
-        http
+        http.antMatcher("/**")
                 // ... existing code here
                 .logout(l -> l
                         .logoutSuccessUrl("/").permitAll()
-                );
-        // ... existing code here
-            http
+                )
              .csrf(c -> c
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        );
-        http
-                // ... existing configuration
+                )
                 .oauth2Login(o -> o
                         .failureHandler((request, response, exception) -> {
                             request.getSession().setAttribute("error.message", exception.getMessage());
                             handler.onAuthenticationFailure(request, response, exception);
                         })
-                );
-        http
+                )
                 .authorizeRequests(a -> a
                         .antMatchers("/", "/error", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
